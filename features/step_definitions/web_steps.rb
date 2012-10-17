@@ -55,6 +55,18 @@ And /^I am logged into the admin panel$/ do
   end
 end
 
+And /^I am not logged into the admin panel$/ do
+  visit '/accounts/login'
+  fill_in 'user_login', :with => 'false'
+  fill_in 'user_password', :with => 'badddd'
+  click_button 'Login'
+  if page.respond_to? :should
+    page.should have_content('Login unsuccessful')
+  else
+    assert page.has_content?('Login unsuccessful')
+  end
+end
+
 # Single-line step scoper
 When /^(.*) within (.*[^:])$/ do |step, parent|
   with_scope(parent) { When step }

@@ -26,6 +26,24 @@ describe Article do
     assert_equal [:body, :extended], a.content_fields
   end
 
+  describe 'merge articles' do
+    before :each do
+      @article1 = Factory(:article, :title => 'foo', :author => 'allison', :body =>'hey')
+      @article2 = Factory(:article, :title => 'bar', :author => 'casey', :body =>'bye')
+      @comment1 = Factory(:comment, :article => @article1, :body => 'good')
+      @comment2 = Factory(:comment, :article => @article2, :body => 'fine')
+    end
+    it "should combine articles text" do
+      @article1.body.should include @article2.body
+    end
+    it "should have both articles comments" do
+      @article1.comments.should include @article2.comments
+    end
+    it "should have only first articles author" do
+      @article1.author.should_not include @article2.author
+    end
+  end
+
   describe "#permalink_url" do
     describe "with hostname" do
       subject { Article.new(:permalink => 'article-3', :published_at => Time.new(2004, 6, 1)).permalink_url(anchor=nil, only_path=false) }

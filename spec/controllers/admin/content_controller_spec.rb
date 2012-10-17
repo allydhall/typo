@@ -3,6 +3,22 @@
 describe Admin::ContentController do
   render_views
 
+  describe 'merge articles' do
+    before :each do
+      @article1 = Factory(:article, :title => 'foo', :body => 'hey')
+      @article2 = Factory(:article, :title => 'bar', :body => 'bye')
+    end
+    it 'should call the model merging method' do
+      @article1.should_receive(:merge_with!).with(@article2.id)
+      put :merge, {:id => @article1.id, :merge_id => @article2.id}
+    end
+    it 'should not allow non-admins to merge' do
+      @article1.should_not_receive(:merge_with!).with(@article2.id)
+      Article.stub!(:find).with(@article1.id).and_return(@article1)
+      put :merge, {:id => @article1.id, :merge_id => @article2.id}
+    end
+  end
+
   # Like it's a shared, need call everywhere
   shared_examples_for 'index action' do
 
